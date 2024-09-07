@@ -1,8 +1,26 @@
+/*
+ * Project Name: [Project Name]
+ * File Name: [File Name]
+ * Description: [Short description of the file]
+ * Author: Zorkin Andrey A.
+ * Created: [Creation Date]
+ * Last Modified: [Last Modified Date]
+ * Version: 1.0
+ *
+ * Copyright (c) [Year] [Your Company]. All rights reserved.
+ *
+ * Description:
+ * [Detailed description of the file's purpose and functionality]
+ */
+
+ // Code starts here
+
 #include <opencv2/opencv.hpp>
 #include <iostream>
 using namespace cv;
 
 const char* winname = "Template window";
+std::string save_path = "C:/Users/Андрей/Downloads/saved_image.png";
 Rect trinangle;
 Rect tmp;
 bool lockEvent = false;
@@ -107,6 +125,13 @@ int main()
         if (lockEvent) draw_triangle(&temp, trinangle);
         imshow(winname, temp);
         if (waitKey(15) == 27) break; //escape
+    }
+    // Сохранение изображения в файл
+    if (!imwrite(save_path, temp)) {
+        std::cerr << "Ошибка при сохранении изображения!" << std::endl;
+    }
+    else {
+        std::cout << "Изображение успешно сохранено в " << save_path << std::endl;
     }
     destroyWindow(winname);
     return 0;
