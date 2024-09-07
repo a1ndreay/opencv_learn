@@ -12,6 +12,7 @@
 
 <h3>Ниже представлен листинг программы: </h3>
 ```cpp
+
 #include <opencv2/opencv.hpp>
 #include <iostream>
 using namespace cv;
