@@ -8,9 +8,11 @@
 </div>
 
 <h3>Ниже изображён результат работы программы: </h3>
-![[Pasted image 20240907203119.png|300]]
+![saved_image](https://github.com/user-attachments/assets/080ae3ae-1f3c-4a3d-8dfe-35bc36f675eb)
+
 <h3>Ниже представлен листинг программы: </h3>
 ```cpp
+
 #include <opencv2/opencv.hpp>
 #include <iostream>
 using namespace cv;
