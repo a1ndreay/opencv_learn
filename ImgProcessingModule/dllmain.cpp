@@ -1,5 +1,7 @@
 ﻿// dllmain.cpp : Определяет точку входа для приложения DLL.
 #include "pch.h"
+#include "SpatialMathFunc.h"
+#include "LinealMathFunc.h"
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,

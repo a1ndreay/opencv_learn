@@ -17,19 +17,20 @@
 /// <param name="_Height">Высота окрестности (должна быть нечётной).</param>
 /// <param name="_Width">Ширина окрестности (должна быть нечётной).</param>
 /// <returns>
-/// Вектор пар координат (Xi, Yj), принадлежащих окрестности.
+/// Вектор, содержащий пары координат (Xi, Yj), принадлежащих окрестности.
+/// (URL: https://e.lanbook.com/book/73514 — С. 122.)
 /// </returns>
 /// <remarks>
-/// Примечание: параметры _Height и _Width должны быть равными и нечётными.
+/// Примечание параметры _Height и _Width должны быть равными и нечётными.
 /// </remarks>
-std::vector<std::pair<uint_fast8_t, uint_fast8_t>> GetLocalityD(std::pair<uint, uint> _CPoint, uint_fast8_t _Height, uint_fast8_t _Width) {
-	std::vector<std::pair<uint_fast8_t, uint_fast8_t>> Locality = std::vector<std::pair<uint_fast8_t, uint_fast8_t>>();
-	const uint8_t OffsetX = _CPoint.first - _Height / 2;
-	const uint8_t OffsetY = _CPoint.second - _Width / 2;
-	for (uint_fast8_t i = 0; i < _Height; i++) {
+std::vector<cv::Point> GetLocalityD(cv::Point _CPoint, std::pair<uint, uint> Core) {
+	std::vector<cv::Point> Locality = std::vector<cv::Point>();
+	const uint8_t OffsetX = _CPoint.x - Core.second / 2;
+	const uint8_t OffsetY = _CPoint.y - Core.first / 2;
+	for (uint_fast8_t i = 0; i < Core.second; i++) {
 		uint_fast8_t LocalY = OffsetY + i;
-		for (uint_fast8_t j = 0; j < _Width; j++) {
-			std::pair<uint_fast8_t, uint_fast8_t> LocalCoord = { OffsetX + j, LocalY};
+		for (uint_fast8_t j = 0; j < Core.first; j++) {
+			cv::Point LocalCoord = { OffsetX + j, LocalY};
 			Locality.push_back(LocalCoord);
 		}
 	}
