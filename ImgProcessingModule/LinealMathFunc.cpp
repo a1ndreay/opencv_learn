@@ -1,16 +1,143 @@
+#include "pch.h"
 #include "LinealMathFunc.h"
-#include <opencv2/opencv.hpp>
-#include <utility>
 
+
+/// <summary>
+/// Усредняющий фильтр.
+/// </summary>
+/// <param name="src">исходная матрица</param>
+/// <param name="Locality">ядро</param>
+/// <param name="Core">параметры маски</param>
+/// <returns>усреднённое значение пикселей окрестности</returns>
 cv::Vec3d Blur(const cv::Mat &src, const std::vector<cv::Point>& Locality, std::pair<uint, uint> Core) {
 	cv::Vec3d Val;
 	uint Sum = 0;
 	for (cv::Point Point : Locality)
 	{
-		Val += (cv::Vec3d)src.at<cv::Vec3b>(Point) * (double)(1 / (Core.first * Core.second));
+        cv::Vec3d _MappedPoint = src.at<cv::Vec3b>(Point);
+		Val += _MappedPoint * ((double)(1) / ((double)(Core.first) * (double)Core.second));
 	}
     return Val;
 }
+
+/// <summary>
+/// Функция гауссовой фильтрации изображения.
+/// </summary>
+/// <param name="src"></param>
+/// <param name="Locality"></param>
+/// <param name="Core"></param>
+/// <returns></returns>
+cv::Vec3d GaussianBlur(const cv::Mat& src, const std::vector<cv::Point>& Locality, std::pair<uint, uint> Core, std::vector<std::vector<double>> coefficients)
+{
+    cv::Vec3d Val = Correlation(src, Locality, Core, coefficients);
+    return Val;
+}
+
+/// <summary>
+/// Создание маски коээфициентов с нормальным распределением
+/// </summary>
+/// <param name="width"></param>
+/// <param name="height"></param>
+/// <param name="sigma">Стандартное отклонение</param>
+/// <returns>Возвращает маску коэффициентов</returns>
+std::vector<std::vector<double>> createGaussianKernel(int width, int height, double sigma) {
+    std::vector<std::vector<double>> coefficients(width, std::vector<double>(height));
+
+    // Центр ядра
+    int centerX = width / 2;
+    int centerY = height / 2;
+
+    double sum = 0.0;  // Для нормализации
+
+    // Заполнение матрицы коэффициентов
+    for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < height; ++j) {
+            int x = i - centerX;
+            int y = j - centerY;
+            coefficients[i][j] = gaussian2D(x, y, sigma);
+            sum += coefficients[i][j];
+        }
+    }
+
+    // Нормализация ядра (чтобы сумма всех элементов была равна 1)
+    for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < height; ++j) {
+            coefficients[i][j] /= sum;
+        }
+    }
+
+    return coefficients;
+}
+
+/// <summary>
+/// Гауссова функция для двух переменных
+/// «Гауссова функция двух переменных» (Гонсалес, Р. Цифровая обработка изображений  / Р. Гонсалес, Р. Вудс. — 3-е изд., испр. и доп. — Москва : Техносфера, 2012. — ISBN 978-5-94836-331-8.
+///  — Текст : электронный // Лань : электронно-библиотечная система. — URL: https://e.lanbook.com/book/73514  — С. 194.).
+/// </summary>
+/// <param name="x"></param>
+/// <param name="y"></param>
+/// <param name="sigma">Стандартное отклонение</param>
+/// <returns></returns>
+double gaussian2D(int x, int y, double sigma) {
+    double exponent = -(x * x + y * y) / (2 * sigma * sigma);
+    return std::exp(exponent);
+}
+
+/// <summary>
+/// Функция корелляции фильтра
+/// </summary>
+/// <param name="src">Исходная матрицы</param>
+/// <param name="Locality">Ядро</param>
+/// <param name="Core">Параметры ядра</param>
+/// <param name="coefficients">Маска коэффициентов</param>
+/// <returns>Смещение корреляции</returns>
+cv::Vec3d Correlation(const cv::Mat& src, const std::vector<cv::Point>& Locality, std::pair<uint, uint> Core, std::vector<std::vector<double>> coefficients)
+{
+    std::stack<cv::Point> SLocality = ConvertVectorToStack(Locality);
+    cv::Vec3d Val;
+    int a = (Core.first - 1) / 2;
+    int b = (Core.second - 1) / 2;
+    for (int s = -a; s < a; s++) {
+        for (int t = -b; t < b; t++) {
+            cv::Point Point = SLocality.top(); SLocality.pop();
+            cv::Point SPoint = shiftCoordinates(s, t, a, b);              //точка в другой системе координат
+            cv::Vec3d _MappedPoint = src.at<cv::Vec3b>(Point.x, Point.y);
+            Val += (double)coefficients[SPoint.x][SPoint.y] * _MappedPoint;
+        }
+    }
+    return Val;
+}
+
+/// <summary>
+/// Функция свёртки фильтра
+/// </summary>
+/// <param name="src">Исходная матрицы</param>
+/// <param name="Locality">Ядро</param>
+/// <param name="Core">Параметры ядра</param>
+/// <param name="coefficients">Маска коэффициентов</param>
+/// <returns>Смещение свёртки</returns>
+cv::Vec3d Convolution(const cv::Mat& src, const std::vector<cv::Point>& Locality, std::pair<uint, uint> Core, std::vector<std::vector<double>> coefficients)
+{
+    std::stack<cv::Point> SLocality = ConvertVectorToStack(Locality);
+    cv::Vec3d Val;
+    int a = (Core.first - 1) / 2;
+    int b = (Core.second - 1) / 2;
+    for (int s = -a; s < a; s++) {
+        for (int t = -b; t < b; t++) {
+            cv::Point Point = SLocality.top(); SLocality.pop();
+            cv::Vec3d _MappedPoint = src.at<cv::Vec3b>(Point.x - s, Point.y - t);
+            Val += (double)coefficients[s][t] * _MappedPoint;
+        }
+    }
+    return Val;
+}
+
+// Функция для преобразования координат (смещаем систему координат из центра в левый верхний угол) параллельный перенос координат
+cv::Point shiftCoordinates(int s, int t, int a, int b) {
+    // Сдвиг координат на a и b для правильного доступа к вектору
+    return cv::Point(s + a, t + b);
+}
+
 
 cv::Mat NormalizeColorRange_CV_8UC3(const cv::Mat& src) {
                                                        // Создаем матрицу для работы с double

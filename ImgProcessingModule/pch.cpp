@@ -1,10 +1,4 @@
-﻿// pch.cpp: файл исходного кода, соответствующий предварительно скомпилированному заголовочному файлу
-
-#include "pch.h"
-#include <opencv2/opencv.hpp>
-#include <vector>
-#include <utility>
-
+﻿#include "pch.h"
 // При использовании предварительно скомпилированных заголовочных файлов необходим следующий файл исходного кода для выполнения сборки.
 
 /// <summary>
@@ -25,14 +19,31 @@
 /// </remarks>
 std::vector<cv::Point> GetLocalityD(cv::Point _CPoint, std::pair<uint, uint> Core) {
 	std::vector<cv::Point> Locality = std::vector<cv::Point>();
-	const uint8_t OffsetX = _CPoint.x - Core.second / 2;
-	const uint8_t OffsetY = _CPoint.y - Core.first / 2;
-	for (uint_fast8_t i = 0; i < Core.second; i++) {
-		uint_fast8_t LocalY = OffsetY + i;
-		for (uint_fast8_t j = 0; j < Core.first; j++) {
-			cv::Point LocalCoord = { OffsetX + j, LocalY};
+	const uint OffsetX = _CPoint.x - Core.second / 2;
+	const uint OffsetY = _CPoint.y - Core.first / 2;
+	for (uint i = 0; i < Core.second; i++) {
+		uint LocalY = OffsetY + i;
+		for (uint j = 0; j < Core.first; j++) {
+			cv::Point LocalCoord = { (int)OffsetX + (int)j, (int)LocalY};
 			Locality.push_back(LocalCoord);
 		}
+	}
+	return Locality;
+}
+
+cv::Mat extendImage(const cv::Mat& src, const cv::Size& ksize, int borderType) {
+	int halfWidth = ksize.width / 2;
+	int halfHeight = ksize.height / 2;
+	cv::Mat extended;
+	cv::copyMakeBorder(src, extended, halfHeight, halfHeight, halfWidth, halfWidth, borderType);
+
+	return extended;
+}
+
+std::stack<cv::Point> ConvertVectorToStack(std::vector<cv::Point> _Locality) {
+	std::stack<cv::Point> Locality;
+	for (std::vector<cv::Point>::size_type i = 0 ; i < _Locality.size(); i++) {
+		Locality.push(_Locality[i]);
 	}
 	return Locality;
 }

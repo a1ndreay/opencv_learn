@@ -1,0 +1,28 @@
+-- Downloading https://github.com/fmtlib/fmt/archive/10.1.0.tar.gz -> fmtlib-fmt-10.1.0.tar.gz...
+-- Extracting source C:/Users/Андрей/AppData/Local/vcpkg/downloads/fmtlib-fmt-10.1.0.tar.gz
+-- Applying patch fix-write-batch.patch
+-- Applying patch fix-format-conflict.patch
+-- Using source at D:/opencv/repos/ImgProcessingModule/vcpkg_installed/vcpkg/blds/fmt/src/10.1.0-95e91156af.clean
+-- Found external ninja('1.11.0').
+-- Configuring x64-windows
+-- Building x64-windows-dbg
+-- Building x64-windows-rel
+-- Fixing pkgconfig file: D:/opencv/repos/ImgProcessingModule/vcpkg_installed/vcpkg/pkgs/fmt_x64-windows/lib/pkgconfig/fmt.pc
+-- Downloading https://mirror.msys2.org/mingw/mingw32/mingw-w64-i686-pkgconf-1~1.8.0-2-any.pkg.tar.zst;https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-pkgconf-1~1.8.0-2-any.pkg.tar.zst;https://mirror.yandex.ru/mirrors/msys2/mingw/mingw32/mingw-w64-i686-pkgconf-1~1.8.0-2-any.pkg.tar.zst;https://mirrors.tuna.tsinghua.edu.cn/msys2/mingw/mingw32/mingw-w64-i686-pkgconf-1~1.8.0-2-any.pkg.tar.zst;https://mirrors.ustc.edu.cn/msys2/mingw/mingw32/mingw-w64-i686-pkgconf-1~1.8.0-2-any.pkg.tar.zst;https://mirror.selfnet.de/msys2/mingw/mingw32/mingw-w64-i686-pkgconf-1~1.8.0-2-any.pkg.tar.zst -> mingw-w64-i686-pkgconf-1~1.8.0-2-any.pkg.tar.zst...
+-- Downloading https://mirror.msys2.org/msys/x86_64/msys2-runtime-3.4.6-1-x86_64.pkg.tar.zst;https://repo.msys2.org/msys/x86_64/msys2-runtime-3.4.6-1-x86_64.pkg.tar.zst;https://mirror.yandex.ru/mirrors/msys2/msys/x86_64/msys2-runtime-3.4.6-1-x86_64.pkg.tar.zst;https://mirrors.tuna.tsinghua.edu.cn/msys2/msys/x86_64/msys2-runtime-3.4.6-1-x86_64.pkg.tar.zst;https://mirrors.ustc.edu.cn/msys2/msys/x86_64/msys2-runtime-3.4.6-1-x86_64.pkg.tar.zst;https://mirror.selfnet.de/msys2/msys/x86_64/msys2-runtime-3.4.6-1-x86_64.pkg.tar.zst -> msys2-msys2-runtime-3.4.6-1-x86_64.pkg.tar.zst...
+-- Using msys root at C:/Users/Андрей/AppData/Local/vcpkg/downloads/tools/msys2/6f3fa1a12ef85a6f
+-- Fixing pkgconfig file: D:/opencv/repos/ImgProcessingModule/vcpkg_installed/vcpkg/pkgs/fmt_x64-windows/debug/lib/pkgconfig/fmt.pc
+CMake Warning at scripts/cmake/vcpkg_copy_pdbs.cmake:44 (message):
+  Could not find a matching pdb file for:
+
+      D:/opencv/repos/ImgProcessingModule/vcpkg_installed/vcpkg/pkgs/fmt_x64-windows/bin/fmt.dll
+      D:/opencv/repos/ImgProcessingModule/vcpkg_installed/vcpkg/pkgs/fmt_x64-windows/debug/bin/fmtd.dll
+
+Call Stack (most recent call first):
+  C:/Users/Андрей/AppData/Local/vcpkg/registries/git-trees/d8209382ca192426861c6aa91d217ea8512bda46/portfile.cmake:23 (vcpkg_copy_pdbs)
+  scripts/ports.cmake:147 (include)
+
+
+-- Installing: D:/opencv/repos/ImgProcessingModule/vcpkg_installed/vcpkg/pkgs/fmt_x64-windows/share/fmt/usage
+-- Installing: D:/opencv/repos/ImgProcessingModule/vcpkg_installed/vcpkg/pkgs/fmt_x64-windows/share/fmt/copyright
+-- Выполнение проверки после сборки

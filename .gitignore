@@ -2,3 +2,7 @@
 .vs/
 **/x64
 **/x86
+*.jpg
+*.png
+*.jpeg
+*.dll
