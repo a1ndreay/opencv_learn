@@ -21,6 +21,30 @@ cv::Vec3d Blur(const cv::Mat &src, const std::vector<cv::Point>& Locality, std::
 }
 
 /// <summary>
+/// Медианный фильтр.
+/// </summary>
+/// <param name="src">исходная матрица</param>
+/// <param name="Locality">ядро</param>
+/// <param name="Core">параметры маски</param>
+/// <returns>медиана окрестности</returns>
+cv::Vec3d medianBlur(const cv::Mat& src, const std::vector<cv::Point>& Locality, std::pair<uint, uint> Core) {
+    cv::Vec3d Val;
+    uint Sum = 0;
+    std::vector<double> c[3]; std::sort(c[0].begin(), c[0].end());
+    for (cv::Point Point : Locality)
+    {
+        cv::Vec3d _MappedPoint = src.at<cv::Vec3b>(Point);
+        c[0].push_back(_MappedPoint[0]);
+        c[1].push_back(_MappedPoint[1]);
+        c[2].push_back(_MappedPoint[2]);
+    }
+    std::sort(c[0].begin(), c[0].end());
+    std::sort(c[1].begin(), c[1].end());
+    std::sort(c[2].begin(), c[2].end());
+    Val = cv::Vec3d((double)c[0].at(c[0].size() / 2), (double)c[1].at(c[1].size() / 2), (double)c[2].at(c[2].size() / 2));
+    return Val;
+}
+/// <summary>
 /// Функция гауссовой фильтрации изображения.
 /// </summary>
 /// <param name="src"></param>
