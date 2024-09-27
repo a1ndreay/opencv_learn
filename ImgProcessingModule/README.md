@@ -28,9 +28,9 @@ Original vs My impementation of MedianBlur vs cv::MedianBlur functions
 
 ## Laplacian
 Original vs My impementation vs cv::GaussianBlur functions
-<a href="https://ibb.co/n6pJC9s"><img src="https://i.ibb.co/XjHR81Z/Test1024x1024pi.jpg" alt="Test1024x1024pi" border="0"></a>
-<a href="https://ibb.co/g4xY1jW"><img src="https://i.ibb.co/0sx5ND9/test-blur.jpg" alt="test-blur" border="0"></a>
-<a href="https://ibb.co/GH4W3Ck"><img src="https://i.ibb.co/hYJB12H/real-blur.jpg" alt="real-blur" border="0"></a>
+![Test1024x1024pi](https://github.com/user-attachments/assets/6b7bc3cd-0b3f-4525-8268-b7f65afcf7db)
+![test_blur](https://github.com/user-attachments/assets/0cf51e9e-1eca-4040-ac91-e6ee4ed19b24)
+![real_blur](https://github.com/user-attachments/assets/8ebba210-ad54-4b2f-a9d7-c0cb10cc562b)
 
 ### Contents
 #### Using next mask with correlation 
