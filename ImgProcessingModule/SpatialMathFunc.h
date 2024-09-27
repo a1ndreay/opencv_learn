@@ -47,8 +47,19 @@ public:
 	}
 
 	std::vector<std::vector<double>> ReservedMask;
+	cv::Mat_<double> ReservedMask3x3;
 	void MaskAdapter(const std::vector<std::vector<double>>& _Source) {
 		this->ReservedMask = _Source;
+	}
+	//Преобразуем наш тип маски (std::vector<std::vector<double>>) в маску типа opencv (cv::Mat_<double>) Прим. только маска 3x3 
+	void MaskAdapterCV(const std::vector<std::vector<double>>& _Source) {
+		cv::Mat_<double> mask(3, 3);
+		for (int i = 0; i < 3; ++i) {
+			for (int j = 0; j < 3; ++j) {
+				mask(i, j) = _Source[i][j];
+			}
+		}
+		this->ReservedMask3x3 = mask;
 	}
 };
 
