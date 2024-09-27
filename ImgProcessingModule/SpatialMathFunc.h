@@ -14,16 +14,42 @@
 #include <utility>
 #include <functional>
 
-__declspec(dllexport) class ProximityLaplacianMask {
-	public:  
-		const std::vector<std::vector<double>> NegMulx90 = { {0,1,0},{1,-4,1},{0,1,0} };
-		const std::vector<std::vector<double>> PosMulx90 = { {0,-1,0},{-1,4,-1},{0,-1,0} };
-		const std::vector<std::vector<double>> NegMulx45 = { {1,1,1},{1,-8,1},{1,1,1} };
-		const std::vector<std::vector<double>> PosMulx45 = { {-1,-1,-1},{-1,8,-1},{-1,-1,-1} };
-		std::vector<std::vector<double>> ReservedMask;
-		void LaplacianMaskAdapter(std::vector<std::vector<double>> _Source) {
-			this->ReservedMask = _Source;
+__declspec(dllexport) enum class LaplacianMasks {
+	NegMulx90,
+	PosMulx90,
+	NegMulx45,
+	PosMulx45
+};
+
+__declspec(dllexport) enum class SobelMasks {
+	Left,
+	Right
+};
+
+__declspec(dllexport) class ProximityMask {
+public:
+	static std::vector<std::vector<double>> getLaplacianMask(LaplacianMasks mask) {
+		switch (mask) {
+		case LaplacianMasks::NegMulx90: return { {0,1,0},{1,-4,1},{0,1,0} };
+		case LaplacianMasks::PosMulx90: return { {0,-1,0},{-1,4,-1},{0,-1,0} };
+		case LaplacianMasks::NegMulx45: return { {1,1,1},{1,-8,1},{1,1,1} };
+		case LaplacianMasks::PosMulx45: return { {-1,-1,-1},{-1,8,-1},{-1,-1,-1} };
+		default: return {};
 		}
+	}
+
+	static std::vector<std::vector<double>> getSobelMask(SobelMasks mask) {
+		switch (mask) {
+		case SobelMasks::Left: return { {-1,-2,-1},{0,0,0},{1,2,1} };
+		case SobelMasks::Right: return { {-1,0,1},{-2,0,2},{-1,0,1} };
+		default: return {};
+		}
+	}
+
+	std::vector<std::vector<double>> ReservedMask;
+	void MaskAdapter(const std::vector<std::vector<double>>& _Source) {
+		this->ReservedMask = _Source;
+	}
 };
 
 template <typename Func>

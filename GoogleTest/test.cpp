@@ -82,13 +82,31 @@ TEST(BlurTEST, HandlesNeigbourhood3Test) {
 //	cv::imwrite("D:/opencv/repos/.outputImage/real_blur.jpg", real_blur);
 //}
 
-TEST(BlurTEST, HandlesLaplacianTest) {
+//TEST(BlurTEST, HandlesLaplacianTest) {
+//	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test1024x1024pi.jpg", cv::IMREAD_COLOR);
+//	cv::Mat test_blur;
+//	
+//	EXPECT_NO_THROW(test_blur = ApplyCorrelation(src, Derivative, ProximityMask::getLaplacianMask(LaplacianMasks::NegMulx90)));
+//	cv::Mat real_blur;
+//	cv::Laplacian(src, real_blur, CV_8U);
+//	//double abs_error = CalculateMeanError(test_blur, real_blur);
+//	//MAE PER PIXEL среднее абсолютное отклонение на пиксель
+//	//double MAEPPPI = (double)abs_error / ((src.cols - 2) * (src.rows - 2));
+//
+//	//GTEST_LOG_(INFO) << "The mean absolute error (MAE) / pixel: " << MAEPPPI;
+//	//EXPECT_NEAR(MAEPPPI, 0.0, 0.00003);
+//
+//	cv::imwrite("D:/opencv/repos/.outputImage/test_blur.jpg", test_blur);
+//	cv::imwrite("D:/opencv/repos/.outputImage/real_blur.jpg", real_blur);
+//}
+
+TEST(BlurTEST, HandlesSobolTest) {
 	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test1024x1024pi.jpg", cv::IMREAD_COLOR);
 	cv::Mat test_blur;
-	
-	EXPECT_NO_THROW(test_blur = ApplyCorrelation(src, Laplacian, ProximityLaplacianMask().NegMulx45));
+
+	EXPECT_NO_THROW(test_blur = ApplyCorrelation(src, Derivative, ProximityMask::getSobelMask(SobelMasks::Left)));
 	cv::Mat real_blur;
-	cv::Laplacian(src, real_blur, CV_8U);
+	cv::Sobel(src, real_blur, CV_32FC1, 0, 1);
 	//double abs_error = CalculateMeanError(test_blur, real_blur);
 	//MAE PER PIXEL среднее абсолютное отклонение на пиксель
 	//double MAEPPPI = (double)abs_error / ((src.cols - 2) * (src.rows - 2));

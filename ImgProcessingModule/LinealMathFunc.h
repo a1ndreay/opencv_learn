@@ -23,7 +23,7 @@ __declspec(dllexport) cv::Mat NormalizeColorRange_CV_8UC3(const cv::Mat& src);
 
 __declspec(dllexport) cv::Vec3d GaussianBlur(const cv::Mat& src, const std::vector<cv::Point>& Locality, std::pair<uint, uint> Core, std::vector<std::vector<double>> coefficients);
 
-__declspec(dllexport) cv::Vec3d Laplacian(const cv::Mat& src, const std::vector<cv::Point>& Locality, std::pair<uint, uint> Core, std::vector<std::vector<double>> coefficients);
+__declspec(dllexport) cv::Vec3d Derivative(const cv::Mat& src, const std::vector<cv::Point>& Locality, std::pair<uint, uint> Core, std::vector<std::vector<double>> coefficients);
 
 __declspec(dllexport) std::vector<std::vector<double>> createGaussianKernel(int width, int height, double sigma);
 

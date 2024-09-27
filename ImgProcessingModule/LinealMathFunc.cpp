@@ -57,7 +57,16 @@ cv::Vec3d GaussianBlur(const cv::Mat& src, const std::vector<cv::Point>& Localit
     return Val;
 }
 
-cv::Vec3d Laplacian(const cv::Mat& src, const std::vector<cv::Point>& Locality, std::pair<uint, uint> Core, std::vector<std::vector<double>> coefficients)
+
+/// <summary>
+/// ƒелает единичный шаг корел€ции, использу€ заданную маску коэффициентов. ¬ отличии от обычной коррел€ции дополнительно ограничивает диапазон в 8-битное изображение (0; 255.0) 
+/// </summary>
+/// <param name="src"></param>
+/// <param name="Locality"></param>
+/// <param name="Core"></param>
+/// <param name="coefficients">ћаска коэффициентов</param>
+/// <returns></returns>
+cv::Vec3d Derivative(const cv::Mat& src, const std::vector<cv::Point>& Locality, std::pair<uint, uint> Core, std::vector<std::vector<double>> coefficients)
 {
     cv::Vec3d Val = Correlation(src, Locality, Core, coefficients);
     // ќграничение значений в допустимый диапазон (clamping)

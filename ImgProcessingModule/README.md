@@ -27,7 +27,7 @@ Original vs My impementation of MedianBlur vs cv::MedianBlur functions
 			$\tilde{f}(x,y)= \displaystyle med_{(r,c)\in S_{xy}} \{g(s,t)\}$
 
 ## Laplacian
-Original vs My impementation vs cv::GaussianBlur functions
+Original vs My impementation vs cv::Laplacian functions
 ![Test1024x1024pi](https://github.com/user-attachments/assets/6b7bc3cd-0b3f-4525-8268-b7f65afcf7db)
 ![test_blur](https://github.com/user-attachments/assets/0cf51e9e-1eca-4040-ac91-e6ee4ed19b24)
 ![real_blur](https://github.com/user-attachments/assets/8ebba210-ad54-4b2f-a9d7-c0cb10cc562b)
@@ -35,3 +35,19 @@ Original vs My impementation vs cv::GaussianBlur functions
 ### Contents
 #### Using next mask with correlation 
 <a href="https://imgbb.com/"><img src="https://i.ibb.co/FBHsTTr/image.png" alt="image" border="0"></a>
+
+## Sobel
+Original vs My impementation vs cv::Sobel functions
+![Test1024x1024pi](https://github.com/user-attachments/assets/6b7bc3cd-0b3f-4525-8268-b7f65afcf7db)
+![test_blur](https://github.com/user-attachments/assets/874bb9c5-43cf-4be1-8736-8f8a29b464f2)
+![real_blur](https://github.com/user-attachments/assets/e325a15b-d0d8-4434-88ff-47ee014c399d)
+
+### Contents
+#### Using next mask with discrete approximation of the sobel operator
+$$
+M(x,y) = | {(z_7 + 2z_8 + z_9) - (z_1 + 2z_2 + z_3) | + | (z_3 + 2z_6 + z_9) - (z_1 + 2z_4 + z_7) | }
+$$
+equivalent to
+$$
+M(x,y) = mag(\nabla f) = mag(grad(f)) = \begin{bmatrix}-1&-2&-1\cr 0&0&0 \cr 1&2&1 \end{bmatrix}
+$$
