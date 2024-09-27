@@ -25,3 +25,11 @@ Original vs My impementation of MedianBlur vs cv::MedianBlur functions
 #### Using next formulas:
 1. Calculating the median point:
 			$\tilde{f}(x,y)= \displaystyle med_{(r,c)\in S_{xy}} \{g(s,t)\}$
+
+## Laplacian
+Original vs My impementation
+<a href="https://ibb.co/ZY0bcH6"><img src="https://i.ibb.co/s6ZXs5v/full-moon-1.jpg" alt="full-moon-1" border="0"></a>
+<a href="https://ibb.co/VmNkKYg"><img src="https://i.ibb.co/fvSTcdk/test-blur.jpg" alt="test-blur" border="0"></a>
+### Contents
+#### Using next mask with correlation 
+<a href="https://imgbb.com/"><img src="https://i.ibb.co/FBHsTTr/image.png" alt="image" border="0"></a>

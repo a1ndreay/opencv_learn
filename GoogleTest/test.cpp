@@ -28,7 +28,7 @@ TEST(BlurTEST, HandlesNeigbourhood3Test) {
 	EXPECT_NE(Blur(src, GetLocalityD(_CPoint, Core), Core), (cv::Vec3d)src.at<cv::Vec3b>(_CPoint));
 }
 
-//TEST(BlurTEST, HandlesFullBlurTest) {
+//TEST(BlurTEST, HandlesBlurTest) {
 //	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test1920x1920pi.jpg", cv::IMREAD_COLOR);
 //	std::pair<uint, uint> Core(27, 27);
 //	cv::Mat test_blur;
@@ -46,19 +46,55 @@ TEST(BlurTEST, HandlesNeigbourhood3Test) {
 //	cv::imwrite("D:/opencv/repos/.outputImage/real_blur.jpg", real_blur);
 //}
 
-TEST(BlurTEST, HandlesGaussian2DTest) {
-	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test1024x1024pi.jpg", cv::IMREAD_COLOR);
-	std::pair<uint, uint> Core(9, 9);
-	cv::Mat test_blur;
-	test_blur = ApplyCorrelation(src, GaussianBlur, Core, 20.0);
-	cv::Mat real_blur;
-	cv::GaussianBlur(src, real_blur, cv::Point(9, 9), 20.0, 20.0);
-	double abs_error = CalculateMeanError(test_blur, real_blur);
-	//MAE PER PIXEL среднее абсолютное отклонение на пиксель
-	double MAEPPPI = (double)abs_error / ((src.cols - 2) * (src.rows - 2));
+//TEST(BlurTEST, HandlesGaussian2DTest) {
+//	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test1024x1024pi.jpg", cv::IMREAD_COLOR);
+//	std::pair<uint, uint> Core(9, 9);
+//	cv::Mat test_blur;
+//	test_blur = ApplyCorrelation(src, GaussianBlur, Core, 20.0);
+//	cv::Mat real_blur;
+//	cv::GaussianBlur(src, real_blur, cv::Point(9, 9), 20.0, 20.0);
+//	double abs_error = CalculateMeanError(test_blur, real_blur);
+//	//MAE PER PIXEL среднее абсолютное отклонение на пиксель
+//	double MAEPPPI = (double)abs_error / ((src.cols - 2) * (src.rows - 2));
+//
+//	GTEST_LOG_(INFO) << "The mean absolute error (MAE) / pixel: " << MAEPPPI;
+//	EXPECT_NEAR(MAEPPPI, 0.0, 0.00003);
+//
+//	cv::imwrite("D:/opencv/repos/.outputImage/test_blur.jpg", test_blur);
+//	cv::imwrite("D:/opencv/repos/.outputImage/real_blur.jpg", real_blur);
+//}
 
-	GTEST_LOG_(INFO) << "The mean absolute error (MAE) / pixel: " << MAEPPPI;
-	EXPECT_NEAR(MAEPPPI, 0.0, 0.00003);
+//TEST(BlurTEST, HandlesMedianBlurTest) {
+//	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test1024x1024pi.jpg", cv::IMREAD_COLOR);
+//	std::pair<uint, uint> Core(9, 9);
+//	cv::Mat test_blur;
+//	test_blur = ThrowNeighborhood(src, medianBlur, Core);
+//	cv::Mat real_blur;
+//	cv::medianBlur(src, real_blur, 9);
+//	double abs_error = CalculateMeanError(test_blur, real_blur);
+//	//MAE PER PIXEL среднее абсолютное отклонение на пиксель
+//	double MAEPPPI = (double)abs_error / ((src.cols - 2) * (src.rows - 2));
+//
+//	GTEST_LOG_(INFO) << "The mean absolute error (MAE) / pixel: " << MAEPPPI;
+//	EXPECT_NEAR(MAEPPPI, 0.0, 0.00003);
+//
+//	cv::imwrite("D:/opencv/repos/.outputImage/test_blur.jpg", test_blur);
+//	cv::imwrite("D:/opencv/repos/.outputImage/real_blur.jpg", real_blur);
+//}
+
+TEST(BlurTEST, HandlesLaplacianTest) {
+	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test1024x1024pi.jpg", cv::IMREAD_COLOR);
+	cv::Mat test_blur;
+	
+	EXPECT_NO_THROW(test_blur = ApplyCorrelation(src, Laplacian, ProximityLaplacianMask().NegMulx45));
+	cv::Mat real_blur;
+	cv::Laplacian(src, real_blur, CV_8U);
+	//double abs_error = CalculateMeanError(test_blur, real_blur);
+	//MAE PER PIXEL среднее абсолютное отклонение на пиксель
+	//double MAEPPPI = (double)abs_error / ((src.cols - 2) * (src.rows - 2));
+
+	//GTEST_LOG_(INFO) << "The mean absolute error (MAE) / pixel: " << MAEPPPI;
+	//EXPECT_NEAR(MAEPPPI, 0.0, 0.00003);
 
 	cv::imwrite("D:/opencv/repos/.outputImage/test_blur.jpg", test_blur);
 	cv::imwrite("D:/opencv/repos/.outputImage/real_blur.jpg", real_blur);

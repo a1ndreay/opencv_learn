@@ -57,6 +57,16 @@ cv::Vec3d GaussianBlur(const cv::Mat& src, const std::vector<cv::Point>& Localit
     return Val;
 }
 
+cv::Vec3d Laplacian(const cv::Mat& src, const std::vector<cv::Point>& Locality, std::pair<uint, uint> Core, std::vector<std::vector<double>> coefficients)
+{
+    cv::Vec3d Val = Correlation(src, Locality, Core, coefficients);
+    // Ограничение значений в допустимый диапазон (clamping)
+    for (int i = 0; i < 3; i++) {
+        Val[i] = std::max(0.0, std::min(255.0, Val[i]));
+    }
+    return Val;
+}
+
 /// <summary>
 /// Создание маски коээфициентов с нормальным распределением
 /// </summary>
@@ -115,22 +125,24 @@ double gaussian2D(int x, int y, double sigma) {
 /// <param name="Core">Параметры ядра</param>
 /// <param name="coefficients">Маска коэффициентов</param>
 /// <returns>Смещение корреляции</returns>
-cv::Vec3d Correlation(const cv::Mat& src, const std::vector<cv::Point>& Locality, std::pair<uint, uint> Core, std::vector<std::vector<double>> coefficients)
-{
+cv::Vec3d Correlation(const cv::Mat& src, const std::vector<cv::Point>& Locality, std::pair<uint, uint> Core, std::vector<std::vector<double>> coefficients) {
     std::stack<cv::Point> SLocality = ConvertVectorToStack(Locality);
-    cv::Vec3d Val;
+    cv::Vec3d Val(0, 0, 0);
     int a = (Core.first - 1) / 2;
     int b = (Core.second - 1) / 2;
-    for (int s = -a; s < a; s++) {
-        for (int t = -b; t < b; t++) {
-            cv::Point Point = SLocality.top(); SLocality.pop();
-            cv::Point SPoint = shiftCoordinates(s, t, a, b);              //точка в другой системе координат
+
+    for (int s = -a; s <= a; s++) {  
+        for (int t = -b; t <= b; t++) {
+            cv::Point Point = SLocality.top();
+            SLocality.pop();
+            cv::Point SPoint = shiftCoordinates(s, t, a, b); 
             cv::Vec3d _MappedPoint = src.at<cv::Vec3b>(Point.x, Point.y);
-            Val += (double)coefficients[SPoint.x][SPoint.y] * _MappedPoint;
+            Val += coefficients[SPoint.x][SPoint.y] * _MappedPoint;
         }
     }
     return Val;
 }
+
 
 /// <summary>
 /// Функция свёртки фильтра
@@ -166,7 +178,7 @@ cv::Point shiftCoordinates(int s, int t, int a, int b) {
 cv::Mat NormalizeColorRange_CV_8UC3(const cv::Mat& src) {
                                                        // Создаем матрицу для работы с double
     cv::Mat srcDouble = src;
-    //src.convertTo(srcDouble, CV_64F);                // Конвертируем исходное изображение в тип double
+    src.convertTo(srcDouble, CV_64F);                // Конвертируем исходное изображение в тип double
 
     cv::Mat channels[3];
     cv::split(srcDouble, channels);                    // Разделяем на 3 канала (B, G, R)
