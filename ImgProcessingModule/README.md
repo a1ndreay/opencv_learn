@@ -27,9 +27,11 @@ Original vs My impementation of MedianBlur vs cv::MedianBlur functions
 			$\tilde{f}(x,y)= \displaystyle med_{(r,c)\in S_{xy}} \{g(s,t)\}$
 
 ## Laplacian
-Original vs My impementation
-<a href="https://ibb.co/ZY0bcH6"><img src="https://i.ibb.co/s6ZXs5v/full-moon-1.jpg" alt="full-moon-1" border="0"></a>
-<a href="https://ibb.co/VmNkKYg"><img src="https://i.ibb.co/fvSTcdk/test-blur.jpg" alt="test-blur" border="0"></a>
+Original vs My impementation vs cv::GaussianBlur functions
+<a href="https://ibb.co/n6pJC9s"><img src="https://i.ibb.co/XjHR81Z/Test1024x1024pi.jpg" alt="Test1024x1024pi" border="0"></a>
+<a href="https://ibb.co/g4xY1jW"><img src="https://i.ibb.co/0sx5ND9/test-blur.jpg" alt="test-blur" border="0"></a>
+<a href="https://ibb.co/GH4W3Ck"><img src="https://i.ibb.co/hYJB12H/real-blur.jpg" alt="real-blur" border="0"></a>
+
 ### Contents
 #### Using next mask with correlation 
 <a href="https://imgbb.com/"><img src="https://i.ibb.co/FBHsTTr/image.png" alt="image" border="0"></a>
