@@ -46,3 +46,22 @@ cv::Mat __ThrowNeighborhood(const cv::Mat& src, Func MathFunc, std::pair<uint, u
 //	return dst;
 //}
 
+cv::Mat FrequencyFiltering(const cv::Mat& src, int (*PerfectLowPassFilter)(const int, const int, const int, const int, const int), const int Factor) {
+	int P = cv::getOptimalDFTSize(src.rows);
+	int Q = cv::getOptimalDFTSize(src.cols);
+	cv::Mat MatExtended = ExtendMatrixZeros(src, P, Q);										 //расширяем матрицу нулями
+	cv::Mat FourierImage = DPF(MatExtended);												 //вычисляем прямое дискретное преобразование фурье
+	cv::Mat SimmetricFilterImage = GetSimmetricFilterImage(P, Q, PerfectLowPassFilter, 1);	 //формируем фильтр-функцию
+	cv::Mat _Multiplexed = cv::Mat(P, Q, CV_8UC3);											 //произведение фильтр-функции на фурье-образ
+
+	for (uint Y = 0; Y < P; Y++) {
+		for (uint X = 0; X < Q; X++) {
+			cv::Vec3d pixel = FourierImage.at<cv::Vec3d>(X, Y) * SimmetricFilterImage.at<cv::Vec3d>(X, Y);
+			_Multiplexed.at<cv::Vec3d>(X, Y) = pixel;
+		}
+	}
+
+	cv::Mat _Result = DPF(_Multiplexed, 1);													//результрующее изображение (обратное ДПФ)				
+	cv::Mat dst = NormalizeColorRange_CV_8UC3(_Result);										// Нормализуем матрицу для избежания переполнения в тип 8-битового изображения
+	return dst;
+}

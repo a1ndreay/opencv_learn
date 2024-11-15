@@ -8,12 +8,14 @@
 #define IMGPROCESSINGMODULE_API __declspec(dllimport)
 #endif
 // Добавьте сюда заголовочные файлы для предварительной компиляции
+#include "pch.h"
 #include "framework.h"
 #include "LinealMathFunc.h"
+#include "FilterFunctions.h"
 #include <opencv2/opencv.hpp>
 #include <utility>
 #include <functional>
-
+#include <complex>
 __declspec(dllexport) enum class LaplacianMasks {
 	NegMulx90,
 	PosMulx90,
@@ -26,6 +28,7 @@ __declspec(dllexport) enum class SobelMasks {
 	Right
 };
 
+//пространственные фильтры
 __declspec(dllexport) class ProximityMask {
 public:
 	static std::vector<std::vector<double>> getLaplacianMask(LaplacianMasks mask) {
@@ -110,5 +113,7 @@ __declspec(dllexport) cv::Mat ApplyCorrelation(const cv::Mat& src, _Func MathFun
 	cv::Mat dst = NormalizeColorRange_CV_8UC3(srcDouble);	 // Нормализуем матрицу для избежания переполнения в тип 8-битового изображения
 	return srcDouble;
 }
+
+__declspec(dllexport) cv::Mat FrequencyFiltering(const cv::Mat& src, int (*PerfectLowPassFilter)(const int, const int, const int, const int, const int), const int Factor);
 
 #endif //SPATIALMATHFUNC_H
