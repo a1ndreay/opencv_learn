@@ -40,6 +40,26 @@ cv::Mat extendImage(const cv::Mat& src, const cv::Size& ksize, int borderType) {
 	return extended;
 }
 
+/// <summary>
+/// расширяет матрицу нулями
+/// </summary>
+/// <param name="src"></param>
+/// <param name="P">numbers of rows</param>
+/// <param name="Q">number of cols</param>
+/// <returns></returns>
+cv::Mat ExtendMatrixZeros(const cv::Mat& src, int P, int Q) {
+	if (src.cols > P || src.rows > Q) {
+		throw std::runtime_error("P and Q must be greater than original src");
+	}
+	cv::Mat srcExtended = cv::Mat::zeros(P, Q, src.type());
+	for (int Y = 0; Y < src.rows; Y++) {
+		for (int X = 0; X < src.cols; X++) {
+			srcExtended.at<cv::Vec3b>(X, Y) = src.at<cv::Vec3b>(X, Y);
+		}
+	}
+	return srcExtended;
+}
+
 std::stack<cv::Point> ConvertVectorToStack(std::vector<cv::Point> _Locality) {
 	std::stack<cv::Point> Locality;
 	for (std::vector<cv::Point>::size_type i = 0 ; i < _Locality.size(); i++) {
