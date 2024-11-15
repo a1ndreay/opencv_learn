@@ -183,6 +183,56 @@ cv::Point shiftCoordinates(int s, int t, int a, int b) {
     return cv::Point(s + a, t + b);
 }
 
+//прямое дискретное преобразование фурье
+cv::Mat DPF(const cv::Mat& src, int flag) {
+    cv::Mat img_src;
+    cv::Mat img_complex;
+    cv::Mat img_dft;
+    cv::Mat img_idft;
+    cv::Mat img_dst;
+    int rows;
+    int cols;
+    int row;
+    int col;
+    double val_real;
+    cv::Vec2d val_complex;
+    img_src = src;
+    rows = cv::getOptimalDFTSize(img_src.rows);
+    cols = cv::getOptimalDFTSize(img_src.cols);
+    img_complex.create(cv::Size(cols, rows), CV_64FC2);
+    for (row = 0; row < rows; row++)
+        for (col = 0; col < cols; col++)
+        {
+            if (row < img_src.rows)
+            {
+                if (col < img_src.cols)
+                    val_real =
+                    (double)img_src.at<uchar>(row, col);
+                else
+                    val_real = 0.0;
+            }
+            else
+                val_real = 0.0;
+            img_complex.at<cv::Vec2d>(row, col)[0] =
+                val_real;
+            img_complex.at<cv::Vec2d>(row, col)[1] = 0.0;
+        }
+    img_dft.create(cv::Size(cols, rows), CV_64FC2);
+    img_idft.create(cv::Size(cols, rows), CV_64FC2);
+    img_dst.create(cv::Size(img_src.cols, img_src.rows),
+        CV_8UC1);
+        cv::dft(img_complex, img_dft, flag, img_src.rows);
+    dft(img_dft, img_idft, cv::DFT_INVERSE | cv::DFT_SCALE,
+        img_src.rows);
+    for (row = 0; row < img_dst.rows; row++)
+        for (col = 0; col < img_dst.cols; col++)
+        {
+            val_complex = img_idft.at<cv::Vec2d>(row, col);
+            img_dst.at<uchar>(row, col) =
+                (uchar)val_complex[0];
+        }
+    return img_dst;
+}
 
 cv::Mat NormalizeColorRange_CV_8UC3(const cv::Mat& src) {
                                                        // Создаем матрицу для работы с double

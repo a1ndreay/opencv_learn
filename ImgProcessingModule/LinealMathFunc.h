@@ -27,6 +27,8 @@ __declspec(dllexport) cv::Vec3d Derivative(const cv::Mat& src, const std::vector
 
 __declspec(dllexport) std::vector<std::vector<double>> createGaussianKernel(int width, int height, double sigma);
 
+__declspec(dllexport) cv::Mat DPF(const cv::Mat& src, int flag = 0);
+
 double gaussian2D(int x, int y, double sigma);
 
 cv::Vec3d Correlation(const cv::Mat& src, const std::vector<cv::Point>& Locality, std::pair<uint, uint> Core, std::vector<std::vector<double>> coefficients);
