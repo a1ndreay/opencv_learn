@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="FilterFunctions.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="LinealMathFunc.h" />
     <ClInclude Include="SpatialMathFunc.h" />
@@ -154,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="FilterFunctions.cpp" />
     <ClCompile Include="LinealMathFunc.cpp" />
     <ClCompile Include="SpatialMathFunc.cpp" />
     <ClCompile Include="pch.cpp">
