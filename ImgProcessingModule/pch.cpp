@@ -54,7 +54,7 @@ cv::Mat ExtendMatrixZeros(const cv::Mat& src, int P, int Q) {
 	cv::Mat srcExtended = cv::Mat::zeros(P, Q, src.type());
 	for (int Y = 0; Y < src.rows; Y++) {
 		for (int X = 0; X < src.cols; X++) {
-			srcExtended.at<cv::Vec3b>(X, Y) = src.at<cv::Vec3b>(X, Y);
+			srcExtended.at<uchar>(X, Y) = src.at<uchar>(X, Y);
 		}
 	}
 	return srcExtended;

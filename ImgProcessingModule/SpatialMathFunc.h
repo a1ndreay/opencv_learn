@@ -115,5 +115,8 @@ __declspec(dllexport) cv::Mat ApplyCorrelation(const cv::Mat& src, _Func MathFun
 }
 
 __declspec(dllexport) cv::Mat FrequencyFiltering(const cv::Mat& src, int (*PerfectLowPassFilter)(const int, const int, const int, const int, const int), const int Factor);
+__declspec(dllexport) cv::Mat FrequencyFiltering(const cv::Mat& src, double (*ButterworthLowPassFilter)(const int, const int, const int, const int, const int, const int), const int Factor, const int order);
+__declspec(dllexport) cv::Mat FrequencyFiltering(const cv::Mat& src, double (*GaussianLowPassFilter)(const int, const int, const int, const int, const int), const int Factor);
+cv::Mat ComFrequencyFiltering(const cv::Mat& src, const cv::Mat& filter, const int P, const int Q);
 
 #endif //SPATIALMATHFUNC_H

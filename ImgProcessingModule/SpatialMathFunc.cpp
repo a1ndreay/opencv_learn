@@ -34,34 +34,62 @@ cv::Mat __ThrowNeighborhood(const cv::Mat& src, Func MathFunc, std::pair<uint, u
 	cv::Mat dst = NormalizeColorRange_CV_8UC3(dst);	 // Нормализуем матрицу для избежания переполнения в тип 8-битового изображения
 	return dst;
 }
-//cv::Mat ThrowNeighborhood(const cv::Mat& src, Func MathFunc, std::pair<uint, uint> Core) {
-//	cv::Mat srcDouble;
-//	src.convertTo(srcDouble, CV_64F);                // Конвертируем исходное изображение в тип double
-//	for (uint Y = 0; Y < src.rows; Y++) {
-//		for (uint X = 0; X < src.cols; X++) {
-//			(cv::Vec3d)srcDouble.at<cv::Vec3b>(X, Y) = MathFunc(src, GetLocalityD(cv::Point(X, Y), Core), Core);
-//		}
-//	}
-//	cv::Mat dst = NormalizeColorRange_CV_8UC3(dst);	 // Нормализуем матрицу для избежания переполнения в тип 8-битового изображения
-//	return dst;
-//}
 
 cv::Mat FrequencyFiltering(const cv::Mat& src, int (*PerfectLowPassFilter)(const int, const int, const int, const int, const int), const int Factor) {
-	int P = cv::getOptimalDFTSize(src.rows);
-	int Q = cv::getOptimalDFTSize(src.cols);
-	cv::Mat MatExtended = ExtendMatrixZeros(src, P, Q);										 //расширяем матрицу нулями
-	cv::Mat FourierImage = DPF(MatExtended);												 //вычисляем прямое дискретное преобразование фурье
-	cv::Mat SimmetricFilterImage = GetSimmetricFilterImage(P, Q, PerfectLowPassFilter, 1);	 //формируем фильтр-функцию
-	cv::Mat _Multiplexed = cv::Mat(P, Q, CV_8UC3);											 //произведение фильтр-функции на фурье-образ
+	int P = cv::getOptimalDFTSize(src.rows);										//Находим оптимальные размеры расширения
+	int Q = cv::getOptimalDFTSize(src.cols);										//
+	cv::Mat result;
+	cv::Mat filter = GetSimmetricFilterImage(P, Q, PerfectLowPassFilter, Factor);	//Строем симметричную фильтр-функцию H(P,Q) с радиусом = Factor
+	result = ComFrequencyFiltering(src, filter, P, Q);
+	return result;
+}
 
-	for (uint Y = 0; Y < P; Y++) {
-		for (uint X = 0; X < Q; X++) {
-			cv::Vec3d pixel = FourierImage.at<cv::Vec3d>(X, Y) * SimmetricFilterImage.at<cv::Vec3d>(X, Y);
-			_Multiplexed.at<cv::Vec3d>(X, Y) = pixel;
+cv::Mat FrequencyFiltering(const cv::Mat& src, double (*ButterworthLowPassFilter)(const int, const int, const int, const int, const int, const int), const int Factor, const int order) {
+	int P = cv::getOptimalDFTSize(src.rows);										//Находим оптимальные размеры расширения
+	int Q = cv::getOptimalDFTSize(src.cols);										//
+	cv::Mat result;
+	cv::Mat filter = GetSimmetricFilterImage(P, Q, ButterworthLowPassFilter, Factor, order);	//Строем симметричную фильтр-функцию H(P,Q) с радиусом = Factor
+	result = ComFrequencyFiltering(src, filter, P, Q);
+	return result;
+}
+
+cv::Mat FrequencyFiltering(const cv::Mat& src, double (*GaussianLowPassFilter)(const int, const int, const int, const int, const int), const int Factor) {
+	int P = cv::getOptimalDFTSize(src.rows);										//Находим оптимальные размеры расширения
+	int Q = cv::getOptimalDFTSize(src.cols);										//
+	cv::Mat result;
+	cv::Mat filter = GetSimmetricFilterImage(P, Q, GaussianLowPassFilter, Factor);	//Строем симметричную фильтр-функцию H(P,Q) с радиусом = Factor
+	result = ComFrequencyFiltering(src, filter, P, Q);
+	return result;
+}
+
+cv::Mat ComFrequencyFiltering(const cv::Mat& src, const cv::Mat& filter, const int P, const int Q) {
+	cv::Mat imgFFT, filterFFT, result;
+	std::vector<cv::Mat> results(3);
+	cv::Mat imgFloat, imgComplex;
+	cv::Mat filterComplex = filter.clone();											//Необязательный шаг, наша фильтр-функция и так имеет тип CV_64FC2
+	shiftDFT(filterComplex);														//Центрируем фильтр-функцию 
+	if (src.type() == 16) {
+		std::vector<cv::Mat> channels;
+		cv::split(src, channels);
+		for (int c = 0; c < 3; c++) {
+			cv::Mat ExtendedSrc = ExtendMatrixZeros(channels[c], P, Q);				//расширяем изображение нулями
+			/*PrepareExtendedImage(ExtendedSrc);*/
+			ExtendedSrc.convertTo(imgFloat, CV_64FC2);
+			// Преобразование изображения и фильтра в частотную область
+			dft(imgFloat, imgFFT, cv::DFT_COMPLEX_OUTPUT);							//находим комплексную часть прямое ДФТ изображения
+			dft(filterComplex, filterFFT, cv::DFT_COMPLEX_OUTPUT);					//находим комплексную часть прямое ДФТ фильтра
+			cv::Mat output;
+			mulSpectrums(imgFFT, filterFFT, output, 0);								//умножаем комплексные части ДФТ				
+
+			idft(output, output, cv::DFT_SCALE | cv::DFT_REAL_OUTPUT | cv::DFT_COMPLEX_OUTPUT);			// Обратное преобразование в пространственную область
+
+			// Нормализация и приведение к типу CV_8U для отображения
+			normalize(output, output, 0, 255, cv::NORM_MINMAX);											// Нормализуем изображение
+			output.convertTo(output, CV_8U);
+			results[c] = cv::Mat(P, Q, CV_8U);
+			output.copyTo(results[c]);
 		}
+		cv::merge(results, result);
 	}
-
-	cv::Mat _Result = DPF(_Multiplexed, 1);													//результрующее изображение (обратное ДПФ)				
-	cv::Mat dst = NormalizeColorRange_CV_8UC3(_Result);										// Нормализуем матрицу для избежания переполнения в тип 8-битового изображения
-	return dst;
+	return result;
 }
