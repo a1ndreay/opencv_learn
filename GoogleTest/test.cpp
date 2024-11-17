@@ -145,7 +145,7 @@ TEST(BlurTEST, HandlesNeigbourhood3Test) {
 //}
 
 TEST(PCHTEST, HandlesExtendMatrixZeros) {
-	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/SourceExtendMatrixZeros.jpg");
+	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/SourceExtendMatrixZeros.jpg", cv::IMREAD_GRAYSCALE);
 	cv::Mat prepared;
 	try {
 		prepared = ExtendMatrixZeros(src, 300, 300);
@@ -155,8 +155,102 @@ TEST(PCHTEST, HandlesExtendMatrixZeros) {
 		FAIL() << "std::exception thrown: " << e.what();
 	}
 
-	cv::Mat expect = cv::imread("D:/opencv/repos/GoogleTest/ExpectExtendMatrixZeros.jpg");
+	cv::Mat expect = cv::imread("D:/opencv/repos/GoogleTest/ExpectExtendMatrixZeros.jpg", cv::IMREAD_GRAYSCALE);
 	EXPECT_TRUE(AreMatricesEqual(prepared, expect));
+}
+
+TEST(FilterFunctionsTEST, HandlesGetSimmetricFilterImage) {
+	cv::Mat SimmetricFilterImage;
+	cv::Mat result;
+	EXPECT_NO_THROW(SimmetricFilterImage = GetSimmetricFilterImage(150, 150, PerfectLowPassFilter, 50));
+	// Ќормализаци€ и приведение к типу CV_8U дл€ отображени€
+	normalize(SimmetricFilterImage, result, 0, 255, cv::NORM_MINMAX);
+	result.convertTo(result, CV_8U);
+	cv::extractChannel(result, result, 0);
+	cv::normalize(result, result, 0, 255, cv::NORM_MINMAX);
+	std::cout << "result: Type = " << result.type() << ", Channels = " << result.channels() << std::endl;
+	cv::imwrite("D:/opencv/repos/.outputImage/Test_HandlesGetSimmetricFilterImage.jpg", result);
+}
+
+TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering_PerfectLowPassFilter) {
+	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_GRAYSCALE);
+	std::cout << "Expected type: " << src.type() << " Expected channels: " << src.channels() << " Expected dims: " << src.dims << " Expected depth: " << src.depth() << std::endl;
+	cv::Mat src2 = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_COLOR);
+	std::cout << "Colors type: " << src2.type() << " Colors channels: " << src2.channels() << " Colors dims: " << src2.dims << " Colors depth: " << src2.depth() << std::endl;
+	std::vector<cv::Mat> channels;
+	cv::split(src2, channels);
+	std::cout << "channels1 type: " << channels[0].type() << " channels1 channels: " << channels[0].channels() << " channels1 dims: " << channels[0].dims << " channels1 depth: " << channels[0].depth() << std::endl;
+
+	cv::Mat res = FrequencyFiltering(src2, PerfectLowPassFilter, 5);
+	cv::imwrite("D:/opencv/repos/.outputImage/Test_HandlesFrequencyFiltering_PerfectLowPassFilter.jpg", res);
+	cv::Mat tst;
+	cv::GaussianBlur(src2, tst, cv::Point(7, 7), 10.0, 0.0);
+
+	cv::Mat resFloat, tstFloat;
+	res.convertTo(resFloat, CV_32F);
+	tst.convertTo(tstFloat, CV_32F);
+	std::cout << "resFloat: Type = " << resFloat.type() << ", Channels = " << resFloat.channels() << std::endl;
+	std::cout << "tstFloat: Type = " << tstFloat.type() << ", Channels = " << tstFloat.channels() << std::endl;
+	cv::Mat subFloat = resFloat - tstFloat;
+	double minVal, maxVal;
+	// ¬ычисление минимального и максимального значени€
+	cv::minMaxLoc(subFloat, &minVal, &maxVal);
+	GTEST_LOG_(INFO) << "Maximum int / pixel: " << maxVal;
+	EXPECT_NEAR(maxVal, 0.0, 100); 
+}
+
+TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering_ButterworthLowPassFilter) {
+	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_GRAYSCALE);
+	std::cout << "Expected type: " << src.type() << " Expected channels: " << src.channels() << " Expected dims: " << src.dims << " Expected depth: " << src.depth() << std::endl;
+	cv::Mat src2 = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_COLOR);
+	std::cout << "Colors type: " << src2.type() << " Colors channels: " << src2.channels() << " Colors dims: " << src2.dims << " Colors depth: " << src2.depth() << std::endl;
+	std::vector<cv::Mat> channels;
+	cv::split(src2, channels);
+	std::cout << "channels1 type: " << channels[0].type() << " channels1 channels: " << channels[0].channels() << " channels1 dims: " << channels[0].dims << " channels1 depth: " << channels[0].depth() << std::endl;
+
+	cv::Mat res = FrequencyFiltering(src2, ButterworthLowPassFilter, 5, 5);
+	cv::imwrite("D:/opencv/repos/.outputImage/Test_HandlesFrequencyFiltering_ButterworthLowPassFilte.jpg", res);
+	cv::Mat tst;
+	cv::GaussianBlur(src2, tst, cv::Point(7, 7), 10.0, 0.0);
+
+	cv::Mat resFloat, tstFloat;
+	res.convertTo(resFloat, CV_32F);
+	tst.convertTo(tstFloat, CV_32F);
+	std::cout << "resFloat: Type = " << resFloat.type() << ", Channels = " << resFloat.channels() << std::endl;
+	std::cout << "tstFloat: Type = " << tstFloat.type() << ", Channels = " << tstFloat.channels() << std::endl;
+	cv::Mat subFloat = resFloat - tstFloat;
+	double minVal, maxVal;
+	// ¬ычисление минимального и максимального значени€
+	cv::minMaxLoc(subFloat, &minVal, &maxVal);
+	GTEST_LOG_(INFO) << "Maximum int / pixel: " << maxVal;
+	EXPECT_NEAR(maxVal, 0.0, 100);
+}
+
+TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering_GaussianLowPassFilter) {
+	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_GRAYSCALE);
+	std::cout << "Expected type: " << src.type() << " Expected channels: " << src.channels() << " Expected dims: " << src.dims << " Expected depth: " << src.depth() << std::endl;
+	cv::Mat src2 = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_COLOR);
+	std::cout << "Colors type: " << src2.type() << " Colors channels: " << src2.channels() << " Colors dims: " << src2.dims << " Colors depth: " << src2.depth() << std::endl;
+	std::vector<cv::Mat> channels;
+	cv::split(src2, channels);
+	std::cout << "channels1 type: " << channels[0].type() << " channels1 channels: " << channels[0].channels() << " channels1 dims: " << channels[0].dims << " channels1 depth: " << channels[0].depth() << std::endl;
+
+	cv::Mat res = FrequencyFiltering(src2, GaussianLowPassFilter, 5);
+	cv::imwrite("D:/opencv/repos/.outputImage/Test_HandlesFrequencyFiltering_GaussianLowPassFilter.jpg", res);
+	cv::Mat tst;
+	cv::GaussianBlur(src2, tst, cv::Point(7, 7), 10.0, 0.0);
+
+	cv::Mat resFloat, tstFloat;
+	res.convertTo(resFloat, CV_32F);
+	tst.convertTo(tstFloat, CV_32F);
+	std::cout << "resFloat: Type = " << resFloat.type() << ", Channels = " << resFloat.channels() << std::endl;
+	std::cout << "tstFloat: Type = " << tstFloat.type() << ", Channels = " << tstFloat.channels() << std::endl;
+	cv::Mat subFloat = resFloat - tstFloat;
+	double minVal, maxVal;
+	// ¬ычисление минимального и максимального значени€
+	cv::minMaxLoc(subFloat, &minVal, &maxVal);
+	GTEST_LOG_(INFO) << "Maximum int / pixel: " << maxVal;
+	EXPECT_NEAR(maxVal, 0.0, 100);
 }
 
 double CalculateMeanError(const cv::Mat& _mat1, const cv::Mat& _mat2) {
@@ -196,11 +290,11 @@ bool AreMatricesEqual(const cv::Mat& mat1, const cv::Mat& mat2) {
 	}
 	for (int Y = 0; Y < mat1.rows; Y++) {
 		for (int X = 0; X < mat1.cols; X++) {
-			cv::Vec3b pixel1 = mat1.at<cv::Vec3b>(X, Y);
-			cv::Vec3b pixel2 = mat2.at<cv::Vec3b>(X, Y);
+			uchar pixel1 = mat1.at<uchar>(X, Y);
+			uchar pixel2 = mat2.at<uchar>(X, Y);
 			if (pixel1 != pixel2) {
 				for (int i = 0; i < 3; i++) {
-					double dev1 = (double)pixel1[i] - pixel2[i];
+					double dev1 = (double)pixel1 - pixel2;
 					if (abs(dev1) > 25) {
 						return false;
 					}
