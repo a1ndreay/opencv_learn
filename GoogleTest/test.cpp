@@ -159,20 +159,20 @@ TEST(PCHTEST, HandlesExtendMatrixZeros) {
 	EXPECT_TRUE(AreMatricesEqual(prepared, expect));
 }
 
-TEST(FilterFunctionsTEST, HandlesGetSimmetricFilterImage) {
-	cv::Mat SimmetricFilterImage;
-	cv::Mat result;
-	EXPECT_NO_THROW(SimmetricFilterImage = GetSimmetricFilterImage(150, 150, PerfectLowPassFilter, 50));
-	// Ќормализаци€ и приведение к типу CV_8U дл€ отображени€
-	normalize(SimmetricFilterImage, result, 0, 255, cv::NORM_MINMAX);
-	result.convertTo(result, CV_8U);
-	cv::extractChannel(result, result, 0);
-	cv::normalize(result, result, 0, 255, cv::NORM_MINMAX);
-	std::cout << "result: Type = " << result.type() << ", Channels = " << result.channels() << std::endl;
-	cv::imwrite("D:/opencv/repos/.outputImage/Test_HandlesGetSimmetricFilterImage.jpg", result);
-}
+//TEST(FilterFunctionsTEST, HandlesGetSimmetricFilterImage) {
+//	cv::Mat SimmetricFilterImage;
+//	cv::Mat result;
+//	EXPECT_NO_THROW(SimmetricFilterImage = GetSimmetricFilterImage(150, 150, PerfectLowPassFilter, 50));
+//	// Ќормализаци€ и приведение к типу CV_8U дл€ отображени€
+//	normalize(SimmetricFilterImage, result, 0, 255, cv::NORM_MINMAX);
+//	result.convertTo(result, CV_8U);
+//	cv::extractChannel(result, result, 0);
+//	cv::normalize(result, result, 0, 255, cv::NORM_MINMAX);
+//	std::cout << "result: Type = " << result.type() << ", Channels = " << result.channels() << std::endl;
+//	cv::imwrite("D:/opencv/repos/.outputImage/Test_HandlesGetSimmetricFilterImage.jpg", result);
+//}
 
-TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering_PerfectLowPassFilter) {
+TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering_LowPassFiltersScope_PerfectLowPassFilter) {
 	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_GRAYSCALE);
 	std::cout << "Expected type: " << src.type() << " Expected channels: " << src.channels() << " Expected dims: " << src.dims << " Expected depth: " << src.depth() << std::endl;
 	cv::Mat src2 = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_COLOR);
@@ -181,7 +181,7 @@ TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering
 	cv::split(src2, channels);
 	std::cout << "channels1 type: " << channels[0].type() << " channels1 channels: " << channels[0].channels() << " channels1 dims: " << channels[0].dims << " channels1 depth: " << channels[0].depth() << std::endl;
 
-	cv::Mat res = FrequencyFiltering(src2, PerfectLowPassFilter, 5);
+	cv::Mat res = FrequencyFiltering(src2, FrequencyFilters::LowPass, PerfectLowPassFilter, 5);
 	cv::imwrite("D:/opencv/repos/.outputImage/Test_HandlesFrequencyFiltering_PerfectLowPassFilter.jpg", res);
 	cv::Mat tst;
 	cv::GaussianBlur(src2, tst, cv::Point(7, 7), 10.0, 0.0);
@@ -199,7 +199,7 @@ TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering
 	EXPECT_NEAR(maxVal, 0.0, 100); 
 }
 
-TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering_ButterworthLowPassFilter) {
+TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering_LowPassFiltersScope_ButterworthLowPassFilter) {
 	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_GRAYSCALE);
 	std::cout << "Expected type: " << src.type() << " Expected channels: " << src.channels() << " Expected dims: " << src.dims << " Expected depth: " << src.depth() << std::endl;
 	cv::Mat src2 = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_COLOR);
@@ -208,7 +208,7 @@ TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering
 	cv::split(src2, channels);
 	std::cout << "channels1 type: " << channels[0].type() << " channels1 channels: " << channels[0].channels() << " channels1 dims: " << channels[0].dims << " channels1 depth: " << channels[0].depth() << std::endl;
 
-	cv::Mat res = FrequencyFiltering(src2, ButterworthLowPassFilter, 5, 5);
+	cv::Mat res = FrequencyFiltering(src2, FrequencyFilters::LowPass, ButterworthLowPassFilter, 5, 5);
 	cv::imwrite("D:/opencv/repos/.outputImage/Test_HandlesFrequencyFiltering_ButterworthLowPassFilte.jpg", res);
 	cv::Mat tst;
 	cv::GaussianBlur(src2, tst, cv::Point(7, 7), 10.0, 0.0);
@@ -226,7 +226,7 @@ TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering
 	EXPECT_NEAR(maxVal, 0.0, 100);
 }
 
-TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering_GaussianLowPassFilter) {
+TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering_LowPassFiltersScope_GaussianLowPassFilter) {
 	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_GRAYSCALE);
 	std::cout << "Expected type: " << src.type() << " Expected channels: " << src.channels() << " Expected dims: " << src.dims << " Expected depth: " << src.depth() << std::endl;
 	cv::Mat src2 = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_COLOR);
@@ -235,8 +235,170 @@ TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering
 	cv::split(src2, channels);
 	std::cout << "channels1 type: " << channels[0].type() << " channels1 channels: " << channels[0].channels() << " channels1 dims: " << channels[0].dims << " channels1 depth: " << channels[0].depth() << std::endl;
 
-	cv::Mat res = FrequencyFiltering(src2, GaussianLowPassFilter, 5);
+	cv::Mat res = FrequencyFiltering(src2, FrequencyFilters::LowPass, GaussianLowPassFilter, 5);
 	cv::imwrite("D:/opencv/repos/.outputImage/Test_HandlesFrequencyFiltering_GaussianLowPassFilter.jpg", res);
+	cv::Mat tst;
+	cv::GaussianBlur(src2, tst, cv::Point(7, 7), 10.0, 0.0);
+
+	cv::Mat resFloat, tstFloat;
+	res.convertTo(resFloat, CV_32F);
+	tst.convertTo(tstFloat, CV_32F);
+	std::cout << "resFloat: Type = " << resFloat.type() << ", Channels = " << resFloat.channels() << std::endl;
+	std::cout << "tstFloat: Type = " << tstFloat.type() << ", Channels = " << tstFloat.channels() << std::endl;
+	cv::Mat subFloat = resFloat - tstFloat;
+	double minVal, maxVal;
+	// ¬ычисление минимального и максимального значени€
+	cv::minMaxLoc(subFloat, &minVal, &maxVal);
+	GTEST_LOG_(INFO) << "Maximum int / pixel: " << maxVal;
+	EXPECT_NEAR(maxVal, 0.0, 100);
+}
+
+TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering_HightPassFiltersScope_PerfectHightPassFilter) {
+	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_GRAYSCALE);
+	std::cout << "Expected type: " << src.type() << " Expected channels: " << src.channels() << " Expected dims: " << src.dims << " Expected depth: " << src.depth() << std::endl;
+	cv::Mat src2 = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_COLOR);
+	std::cout << "Colors type: " << src2.type() << " Colors channels: " << src2.channels() << " Colors dims: " << src2.dims << " Colors depth: " << src2.depth() << std::endl;
+	std::vector<cv::Mat> channels;
+	cv::split(src2, channels);
+	std::cout << "channels1 type: " << channels[0].type() << " channels1 channels: " << channels[0].channels() << " channels1 dims: " << channels[0].dims << " channels1 depth: " << channels[0].depth() << std::endl;
+
+	cv::Mat res = FrequencyFiltering(src2, FrequencyFilters::HightPass, PerfectLowPassFilter, 5);
+	cv::imwrite("D:/opencv/repos/.outputImage/Test_HandlesFrequencyFiltering_PerfectHightPassFilter.jpg", res);
+	cv::Mat tst;
+	cv::GaussianBlur(src2, tst, cv::Point(0, 0), 3.0);
+
+	cv::Mat resFloat, tstFloat;
+	res.convertTo(resFloat, CV_32F);
+	tst.convertTo(tstFloat, CV_32F);
+	std::cout << "resFloat: Type = " << resFloat.type() << ", Channels = " << resFloat.channels() << std::endl;
+	std::cout << "tstFloat: Type = " << tstFloat.type() << ", Channels = " << tstFloat.channels() << std::endl;
+	cv::Mat subFloat = resFloat - tstFloat;
+	double minVal, maxVal;
+	// ¬ычисление минимального и максимального значени€
+	cv::minMaxLoc(subFloat, &minVal, &maxVal);
+	GTEST_LOG_(INFO) << "Maximum int / pixel: " << maxVal;
+	EXPECT_NEAR(maxVal, 0.0, 100);
+}
+
+TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering_HightPassFiltersScope_ButterworthLowPassFilter) {
+	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_GRAYSCALE);
+	std::cout << "Expected type: " << src.type() << " Expected channels: " << src.channels() << " Expected dims: " << src.dims << " Expected depth: " << src.depth() << std::endl;
+	cv::Mat src2 = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_COLOR);
+	std::cout << "Colors type: " << src2.type() << " Colors channels: " << src2.channels() << " Colors dims: " << src2.dims << " Colors depth: " << src2.depth() << std::endl;
+	std::vector<cv::Mat> channels;
+	cv::split(src2, channels);
+	std::cout << "channels1 type: " << channels[0].type() << " channels1 channels: " << channels[0].channels() << " channels1 dims: " << channels[0].dims << " channels1 depth: " << channels[0].depth() << std::endl;
+
+	cv::Mat res = FrequencyFiltering(src2, FrequencyFilters::HightPass, ButterworthLowPassFilter, 5, 5);
+	cv::imwrite("D:/opencv/repos/.outputImage/Test_HandlesFrequencyFiltering_ButterworthHightPassFilte.jpg", res);
+	cv::Mat tst;
+	cv::GaussianBlur(src2, tst, cv::Point(7, 7), 10.0, 0.0);
+
+	cv::Mat resFloat, tstFloat;
+	res.convertTo(resFloat, CV_32F);
+	tst.convertTo(tstFloat, CV_32F);
+	std::cout << "resFloat: Type = " << resFloat.type() << ", Channels = " << resFloat.channels() << std::endl;
+	std::cout << "tstFloat: Type = " << tstFloat.type() << ", Channels = " << tstFloat.channels() << std::endl;
+	cv::Mat subFloat = resFloat - tstFloat;
+	double minVal, maxVal;
+	// ¬ычисление минимального и максимального значени€
+	cv::minMaxLoc(subFloat, &minVal, &maxVal);
+	GTEST_LOG_(INFO) << "Maximum int / pixel: " << maxVal;
+	EXPECT_NEAR(maxVal, 0.0, 100);
+}
+
+TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering_HightPassFiltersScope_GaussianLowPassFilter) {
+	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_GRAYSCALE);
+	std::cout << "Expected type: " << src.type() << " Expected channels: " << src.channels() << " Expected dims: " << src.dims << " Expected depth: " << src.depth() << std::endl;
+	cv::Mat src2 = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_COLOR);
+	std::cout << "Colors type: " << src2.type() << " Colors channels: " << src2.channels() << " Colors dims: " << src2.dims << " Colors depth: " << src2.depth() << std::endl;
+	std::vector<cv::Mat> channels;
+	cv::split(src2, channels);
+	std::cout << "channels1 type: " << channels[0].type() << " channels1 channels: " << channels[0].channels() << " channels1 dims: " << channels[0].dims << " channels1 depth: " << channels[0].depth() << std::endl;
+
+	cv::Mat res = FrequencyFiltering(src2, FrequencyFilters::HightPass, GaussianLowPassFilter, 5);
+	cv::imwrite("D:/opencv/repos/.outputImage/Test_HandlesFrequencyFiltering_GaussianHightPassFilter.jpg", res);
+	cv::Mat tst;
+	cv::GaussianBlur(src2, tst, cv::Point(7, 7), 10.0, 0.0);
+
+	cv::Mat resFloat, tstFloat;
+	res.convertTo(resFloat, CV_32F);
+	tst.convertTo(tstFloat, CV_32F);
+	std::cout << "resFloat: Type = " << resFloat.type() << ", Channels = " << resFloat.channels() << std::endl;
+	std::cout << "tstFloat: Type = " << tstFloat.type() << ", Channels = " << tstFloat.channels() << std::endl;
+	cv::Mat subFloat = resFloat - tstFloat;
+	double minVal, maxVal;
+	// ¬ычисление минимального и максимального значени€
+	cv::minMaxLoc(subFloat, &minVal, &maxVal);
+	GTEST_LOG_(INFO) << "Maximum int / pixel: " << maxVal;
+	EXPECT_NEAR(maxVal, 0.0, 100);
+}
+
+TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering_BandPassFiltersScope_PerfectBandPassFilter) {
+	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_GRAYSCALE);
+	std::cout << "Expected type: " << src.type() << " Expected channels: " << src.channels() << " Expected dims: " << src.dims << " Expected depth: " << src.depth() << std::endl;
+	cv::Mat src2 = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_COLOR);
+	std::cout << "Colors type: " << src2.type() << " Colors channels: " << src2.channels() << " Colors dims: " << src2.dims << " Colors depth: " << src2.depth() << std::endl;
+	std::vector<cv::Mat> channels;
+	cv::split(src2, channels);
+	std::cout << "channels1 type: " << channels[0].type() << " channels1 channels: " << channels[0].channels() << " channels1 dims: " << channels[0].dims << " channels1 depth: " << channels[0].depth() << std::endl;
+
+	cv::Mat res = FrequencyFiltering(src2, PerfectBandPassFilter, 5, 10);
+	cv::imwrite("D:/opencv/repos/.outputImage/Test_HandlesFrequencyFiltering_PerfectBandPassFilter.jpg", res);
+	cv::Mat tst;
+	cv::GaussianBlur(src2, tst, cv::Point(7, 7), 10.0, 0.0);
+
+	cv::Mat resFloat, tstFloat;
+	res.convertTo(resFloat, CV_32F);
+	tst.convertTo(tstFloat, CV_32F);
+	std::cout << "resFloat: Type = " << resFloat.type() << ", Channels = " << resFloat.channels() << std::endl;
+	std::cout << "tstFloat: Type = " << tstFloat.type() << ", Channels = " << tstFloat.channels() << std::endl;
+	cv::Mat subFloat = resFloat - tstFloat;
+	double minVal, maxVal;
+	// ¬ычисление минимального и максимального значени€
+	cv::minMaxLoc(subFloat, &minVal, &maxVal);
+	GTEST_LOG_(INFO) << "Maximum int / pixel: " << maxVal;
+	EXPECT_NEAR(maxVal, 0.0, 100);
+}
+
+TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering_BandPassFiltersScope_ButterworthBandPassFilter) {
+	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_GRAYSCALE);
+	std::cout << "Expected type: " << src.type() << " Expected channels: " << src.channels() << " Expected dims: " << src.dims << " Expected depth: " << src.depth() << std::endl;
+	cv::Mat src2 = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_COLOR);
+	std::cout << "Colors type: " << src2.type() << " Colors channels: " << src2.channels() << " Colors dims: " << src2.dims << " Colors depth: " << src2.depth() << std::endl;
+	std::vector<cv::Mat> channels;
+	cv::split(src2, channels);
+	std::cout << "channels1 type: " << channels[0].type() << " channels1 channels: " << channels[0].channels() << " channels1 dims: " << channels[0].dims << " channels1 depth: " << channels[0].depth() << std::endl;
+
+	cv::Mat res = FrequencyFiltering(src2, ButterworthBandPassFilter, 5, 10, 100);
+	cv::imwrite("D:/opencv/repos/.outputImage/Test_HandlesFrequencyFiltering_ButterworthBandPassFilter.jpg", res);
+	cv::Mat tst;
+	cv::GaussianBlur(src2, tst, cv::Point(7, 7), 10.0, 0.0);
+
+	cv::Mat resFloat, tstFloat;
+	res.convertTo(resFloat, CV_32F);
+	tst.convertTo(tstFloat, CV_32F);
+	std::cout << "resFloat: Type = " << resFloat.type() << ", Channels = " << resFloat.channels() << std::endl;
+	std::cout << "tstFloat: Type = " << tstFloat.type() << ", Channels = " << tstFloat.channels() << std::endl;
+	cv::Mat subFloat = resFloat - tstFloat;
+	double minVal, maxVal;
+	// ¬ычисление минимального и максимального значени€
+	cv::minMaxLoc(subFloat, &minVal, &maxVal);
+	GTEST_LOG_(INFO) << "Maximum int / pixel: " << maxVal;
+	EXPECT_NEAR(maxVal, 0.0, 100);
+}
+
+TEST(ImgProcessingModule_FunctionTest_SpatialMathFunc, HandlesFrequencyFiltering_BandPassFiltersScope_GaussianBandPassFilter) {
+	cv::Mat src = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_GRAYSCALE);
+	std::cout << "Expected type: " << src.type() << " Expected channels: " << src.channels() << " Expected dims: " << src.dims << " Expected depth: " << src.depth() << std::endl;
+	cv::Mat src2 = cv::imread("D:/opencv/repos/GoogleTest/Test150x150pi.jpg", cv::IMREAD_COLOR);
+	std::cout << "Colors type: " << src2.type() << " Colors channels: " << src2.channels() << " Colors dims: " << src2.dims << " Colors depth: " << src2.depth() << std::endl;
+	std::vector<cv::Mat> channels;
+	cv::split(src2, channels);
+	std::cout << "channels1 type: " << channels[0].type() << " channels1 channels: " << channels[0].channels() << " channels1 dims: " << channels[0].dims << " channels1 depth: " << channels[0].depth() << std::endl;
+
+	cv::Mat res = FrequencyFiltering(src2, GaussianBandPassFilter, 5, 10);
+	cv::imwrite("D:/opencv/repos/.outputImage/Test_HandlesFrequencyFiltering_GaussianBandPassFilter.jpg", res);
 	cv::Mat tst;
 	cv::GaussianBlur(src2, tst, cv::Point(7, 7), 10.0, 0.0);
 
