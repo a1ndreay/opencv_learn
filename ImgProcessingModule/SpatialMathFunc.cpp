@@ -35,29 +35,56 @@ cv::Mat __ThrowNeighborhood(const cv::Mat& src, Func MathFunc, std::pair<uint, u
 	return dst;
 }
 
-cv::Mat FrequencyFiltering(const cv::Mat& src, int (*PerfectLowPassFilter)(const int, const int, const int, const int, const int), const int Factor) {
+cv::Mat FrequencyFiltering(const cv::Mat& src, FrequencyFilters type, int (*PerfectLowPassFilter)(const int, const int, const int, const int, const int), const int Factor) {
 	int P = cv::getOptimalDFTSize(src.rows);										//Находим оптимальные размеры расширения
 	int Q = cv::getOptimalDFTSize(src.cols);										//
 	cv::Mat result;
-	cv::Mat filter = GetSimmetricFilterImage(P, Q, PerfectLowPassFilter, Factor);	//Строем симметричную фильтр-функцию H(P,Q) с радиусом = Factor
+	cv::Mat filter = GetSimmetricFilterImage(P, Q, type, PerfectLowPassFilter, Factor);				//Строем симметричную фильтр-функцию H(P,Q) с радиусом = Factor
 	result = ComFrequencyFiltering(src, filter, P, Q);
 	return result;
 }
 
-cv::Mat FrequencyFiltering(const cv::Mat& src, double (*ButterworthLowPassFilter)(const int, const int, const int, const int, const int, const int), const int Factor, const int order) {
+cv::Mat FrequencyFiltering(const cv::Mat& src, FrequencyFilters type, double (*ButterworthLowPassFilter)(const int, const int, const int, const int, const int, const int), const int Factor, const int order) {
 	int P = cv::getOptimalDFTSize(src.rows);										//Находим оптимальные размеры расширения
 	int Q = cv::getOptimalDFTSize(src.cols);										//
 	cv::Mat result;
-	cv::Mat filter = GetSimmetricFilterImage(P, Q, ButterworthLowPassFilter, Factor, order);	//Строем симметричную фильтр-функцию H(P,Q) с радиусом = Factor
+	cv::Mat filter = GetSimmetricFilterImage(P, Q, type, ButterworthLowPassFilter, Factor, order);	//Строем симметричную фильтр-функцию H(P,Q) с радиусом = Factor
 	result = ComFrequencyFiltering(src, filter, P, Q);
 	return result;
 }
 
-cv::Mat FrequencyFiltering(const cv::Mat& src, double (*GaussianLowPassFilter)(const int, const int, const int, const int, const int), const int Factor) {
+cv::Mat FrequencyFiltering(const cv::Mat& src, FrequencyFilters type, double (*GaussianLowPassFilter)(const int, const int, const int, const int, const int), const int Factor) {
 	int P = cv::getOptimalDFTSize(src.rows);										//Находим оптимальные размеры расширения
 	int Q = cv::getOptimalDFTSize(src.cols);										//
 	cv::Mat result;
-	cv::Mat filter = GetSimmetricFilterImage(P, Q, GaussianLowPassFilter, Factor);	//Строем симметричную фильтр-функцию H(P,Q) с радиусом = Factor
+	cv::Mat filter = GetSimmetricFilterImage(P, Q, type, GaussianLowPassFilter, Factor);	//Строем симметричную фильтр-функцию H(P,Q) с радиусом = Factor
+	result = ComFrequencyFiltering(src, filter, P, Q);
+	return result;
+}
+
+cv::Mat FrequencyFiltering(const cv::Mat& src, double (*PerfectBandPassFilter)(const int, const int, const int, const int, const int, const int), const int innerRadius, const int outerRadius) {
+	int P = cv::getOptimalDFTSize(src.rows);										//Находим оптимальные размеры расширения
+	int Q = cv::getOptimalDFTSize(src.cols);										//
+	cv::Mat result;
+	cv::Mat filter = GetSimmetricFilterImage(P, Q, PerfectBandPassFilter, innerRadius, outerRadius);	//Строем симметричную фильтр-функцию H(P,Q) с радиусом = Factor
+	result = ComFrequencyFiltering(src, filter, P, Q);
+	return result;
+}
+
+cv::Mat FrequencyFiltering(const cv::Mat& src, double (*ButterworthBandPassFilter)(const int, const int, const int, const int, const int, const int, const int), const int innerRadius, const int outerRadius, const int order) {
+	int P = cv::getOptimalDFTSize(src.rows);										//Находим оптимальные размеры расширения
+	int Q = cv::getOptimalDFTSize(src.cols);										//
+	cv::Mat result;
+	cv::Mat filter = GetSimmetricFilterImage(P, Q, ButterworthBandPassFilter, innerRadius, outerRadius, order);	//Строем симметричную фильтр-функцию H(P,Q) с радиусом = Factor
+	result = ComFrequencyFiltering(src, filter, P, Q);
+	return result;
+}
+
+cv::Mat FrequencyFiltering(const cv::Mat& src, long double (*GaussianBandPassFilter)(const int, const int, const int, const int, const int, const int), const int innerRadius, const int outerRadius) {
+	int P = cv::getOptimalDFTSize(src.rows);										//Находим оптимальные размеры расширения
+	int Q = cv::getOptimalDFTSize(src.cols);										//
+	cv::Mat result;
+	cv::Mat filter = GetSimmetricFilterImage(P, Q, GaussianBandPassFilter, innerRadius, outerRadius);	//Строем симметричную фильтр-функцию H(P,Q) с радиусом = Factor
 	result = ComFrequencyFiltering(src, filter, P, Q);
 	return result;
 }

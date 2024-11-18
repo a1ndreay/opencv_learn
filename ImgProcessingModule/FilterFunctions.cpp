@@ -5,7 +5,7 @@
 ///  Реализации дискретных частотных фильтров сглаживания изображений
 /// </summary>
 
-cv::Mat GetSimmetricFilterImage(const int P, const int Q, int (*PerfectLowPassFilter)(const int, const int, const int, const int, const int), const int Factor) {
+cv::Mat GetSimmetricFilterImage(const int P, const int Q, FrequencyFilters type, int (*PerfectLowPassFilter)(const int, const int, const int, const int, const int), const int Factor) {
     cv::Mat filter(P, Q, CV_64FC2);
 
     for (int u = 0; u < P; ++u) {
@@ -13,10 +13,15 @@ cv::Mat GetSimmetricFilterImage(const int P, const int Q, int (*PerfectLowPassFi
             filter.at<cv::Vec2d>(u, v) = PerfectLowPassFilter(u, v, P, Q, Factor);
         }
     }
-    return filter;
+
+    switch (type) {
+    case FrequencyFilters::LowPass: return { filter };
+    case FrequencyFilters::HightPass: return { cv::Scalar::all(1) - filter};
+    default: return {};
+    }
 }
 
-cv::Mat GetSimmetricFilterImage(const int P, const int Q, double (*ButterworthLowPassFilter)(const int, const int, const int, const int, const int, const int), const int Factor, const int order) {
+cv::Mat GetSimmetricFilterImage(const int P, const int Q, FrequencyFilters type, double (*ButterworthLowPassFilter)(const int, const int, const int, const int, const int, const int), const int Factor, const int order) {
     cv::Mat filter(P, Q, CV_64FC2);
 
     for (int u = 0; u < P; ++u) {
@@ -24,10 +29,14 @@ cv::Mat GetSimmetricFilterImage(const int P, const int Q, double (*ButterworthLo
             filter.at<cv::Vec2d>(u, v) = ButterworthLowPassFilter(u, v, P, Q, Factor, order);
         }
     }
-    return filter;
+    switch (type) {
+    case FrequencyFilters::LowPass: return { filter };
+    case FrequencyFilters::HightPass: return { cv::Scalar::all(1) - filter };
+    default: return {};
+    }
 }
 
-cv::Mat GetSimmetricFilterImage(const int P, const int Q, double (*GaussianLowPassFilter)(const int, const int, const int, const int, const int), const int Factor) {
+cv::Mat GetSimmetricFilterImage(const int P, const int Q, FrequencyFilters type, double (*GaussianLowPassFilter)(const int, const int, const int, const int, const int), const int Factor) {
     cv::Mat filter(P, Q, CV_64FC2);
 
     for (int u = 0; u < P; ++u) {
@@ -35,7 +44,44 @@ cv::Mat GetSimmetricFilterImage(const int P, const int Q, double (*GaussianLowPa
             filter.at<cv::Vec2d>(u, v) = GaussianLowPassFilter(u, v, P, Q, Factor);
         }
     }
-    return filter;
+    switch (type) {
+    case FrequencyFilters::LowPass: return { filter };
+    case FrequencyFilters::HightPass: return { cv::Scalar::all(1) - filter };
+    default: return {};
+    }
+}
+
+cv::Mat GetSimmetricFilterImage(const int P, const int Q, double (*PerfectBandPassFilter)(const int, const int, const int, const int, const int, const int), const int innerRadius, const int outerRadius) {
+    cv::Mat filter(P, Q, CV_64FC2);
+
+    for (int u = 0; u < P; ++u) {
+        for (int v = 0; v < Q; ++v) {
+            filter.at<cv::Vec2d>(u, v) = PerfectBandPassFilter(u, v, P, Q, innerRadius, outerRadius);
+        }
+    }
+    return { filter };
+}
+
+cv::Mat GetSimmetricFilterImage(const int P, const int Q, double (*ButterworthBandPassFilter)(const int, const int, const int, const int, const int, const int, const int), const int innerRadius, const int outerRadius, const int order) {
+    cv::Mat filter(P, Q, CV_64FC2);
+
+    for (int u = 0; u < P; ++u) {
+        for (int v = 0; v < Q; ++v) {
+            filter.at<cv::Vec2d>(u, v) = ButterworthBandPassFilter(u, v, P, Q, innerRadius, outerRadius, order);
+        }
+    }
+    return { filter };
+}
+
+cv::Mat GetSimmetricFilterImage(const int P, const int Q, long double (*GaussianBandPassFilter)(const int, const int, const int, const int, const int, const int), const int innerRadius, const int outerRadius) {
+    cv::Mat filter(P, Q, CV_64FC2);
+
+    for (int u = 0; u < P; ++u) {
+        for (int v = 0; v < Q; ++v) {
+            filter.at<cv::Vec2d>(u, v) = GaussianBandPassFilter(u, v, P, Q, innerRadius, outerRadius);
+        }
+    }
+    return { filter };
 }
 
 /// <summary>
@@ -59,11 +105,47 @@ double ButterworthLowPassFilter(const int U, const int V, const int P, const int
     return val;
 }
 
+/// <summary>
+/// Гауссов фильтр низких частот
+/// </summary>
 double GaussianLowPassFilter(const int U, const int V, const int P, const int Q, const int Factor) {
     double dist = sqrt(pow(U - P/2, 2) + pow(V - Q/2, 2));
     double val = exp(-(dist * dist) / (2 * Factor * Factor));
     return val;
 }
+
+double PerfectBandPassFilter(const int U, const int V, const int P, const int Q, int innerRadius, int outerRadius) {
+    // Вычисляем D0 и W
+    double D0 = (innerRadius + outerRadius) / 2.0;
+    double W = abs(outerRadius - innerRadius);
+    double dist = sqrt(pow(U - P/2, 2) + pow(V - Q/2, 2));
+    if (dist >= (D0 - W / 2) && dist <= (D0 + W / 2))
+        return 1.0;
+    else
+        return 0.0;
+}
+
+double ButterworthBandPassFilter(const int U, const int V, const int P, const int Q, int innerRadius, int outerRadius, int order) {
+    double dist = sqrt(pow(U - P/2, 2) + pow(V - Q/2, 2));
+    double D0 = (innerRadius + outerRadius) / 2;
+    double butterworth = 1.0 / (1.0 + pow((dist * dist - D0 * D0) / (P * dist), 2 * order));
+    return butterworth;
+
+}
+
+long double GaussianBandPassFilter(const int U, const int V, const int P, const int Q, int innerRadius, int outerRadius) {
+    auto gaussian = [&](double d, double radius, double width) {
+        return exp(-pow(pow(d * d - radius * radius, 2) / (d * width), 2));
+        };
+
+    double width = abs(outerRadius - innerRadius);
+    double dist = sqrt(pow(U - P/2, 2) + pow(V - Q/2, 2));
+    long double val = gaussian(dist, (innerRadius + outerRadius) / 2, width);
+    return val;
+
+}
+
+
 
 void shiftDFT(cv::Mat & mat) {
     int cx = mat.cols / 2;

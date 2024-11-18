@@ -16,6 +16,7 @@
 #include <utility>
 #include <functional>
 #include <complex>
+#include <functional>
 __declspec(dllexport) enum class LaplacianMasks {
 	NegMulx90,
 	PosMulx90,
@@ -114,9 +115,12 @@ __declspec(dllexport) cv::Mat ApplyCorrelation(const cv::Mat& src, _Func MathFun
 	return srcDouble;
 }
 
-__declspec(dllexport) cv::Mat FrequencyFiltering(const cv::Mat& src, int (*PerfectLowPassFilter)(const int, const int, const int, const int, const int), const int Factor);
-__declspec(dllexport) cv::Mat FrequencyFiltering(const cv::Mat& src, double (*ButterworthLowPassFilter)(const int, const int, const int, const int, const int, const int), const int Factor, const int order);
-__declspec(dllexport) cv::Mat FrequencyFiltering(const cv::Mat& src, double (*GaussianLowPassFilter)(const int, const int, const int, const int, const int), const int Factor);
+__declspec(dllexport) cv::Mat FrequencyFiltering(const cv::Mat& src, FrequencyFilters type, int (*PerfectLowPassFilter)(const int, const int, const int, const int, const int), const int Factor);
+__declspec(dllexport) cv::Mat FrequencyFiltering(const cv::Mat& src, FrequencyFilters type, double (*ButterworthLowPassFilter)(const int, const int, const int, const int, const int, const int), const int Factor, const int order);
+__declspec(dllexport) cv::Mat FrequencyFiltering(const cv::Mat& src, FrequencyFilters type, double (*GaussianLowPassFilter)(const int, const int, const int, const int, const int), const int Factor);
+__declspec(dllexport) cv::Mat FrequencyFiltering(const cv::Mat& src, double (*PerfectBandPassFilter)(const int, const int, const int, const int, const int, const int), const int innerRadius, const int outerRadius);
+__declspec(dllexport) cv::Mat FrequencyFiltering(const cv::Mat& src, double (*ButterworthBandPassFilter)(const int, const int, const int, const int, const int, const int, const int), const int innerRadius, const int outerRadius, const int order);
+__declspec(dllexport) cv::Mat FrequencyFiltering(const cv::Mat& src, long double (*GaussianBandPassFilter)(const int, const int, const int, const int, const int, const int), const int innerRadius, const int outerRadius);
 cv::Mat ComFrequencyFiltering(const cv::Mat& src, const cv::Mat& filter, const int P, const int Q);
 
 #endif //SPATIALMATHFUNC_H
