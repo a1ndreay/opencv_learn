@@ -59,7 +59,7 @@ cv::Mat GetSimmetricFilterImage(const int P, const int Q, double (*PerfectBandPa
             filter.at<cv::Vec2d>(u, v) = PerfectBandPassFilter(u, v, P, Q, innerRadius, outerRadius);
         }
     }
-    return { filter };
+    return { cv::Scalar::all(1) - filter };     //Полосовой фильтр получаем обратным преобразованием из режекторного фильтра
 }
 
 cv::Mat GetSimmetricFilterImage(const int P, const int Q, double (*ButterworthBandPassFilter)(const int, const int, const int, const int, const int, const int, const int), const int innerRadius, const int outerRadius, const int order) {
@@ -70,7 +70,7 @@ cv::Mat GetSimmetricFilterImage(const int P, const int Q, double (*ButterworthBa
             filter.at<cv::Vec2d>(u, v) = ButterworthBandPassFilter(u, v, P, Q, innerRadius, outerRadius, order);
         }
     }
-    return { filter };
+    return { cv::Scalar::all(1) - filter };     //Полосовой фильтр получаем обратным преобразованием из режекторного фильтра
 }
 
 cv::Mat GetSimmetricFilterImage(const int P, const int Q, long double (*GaussianBandPassFilter)(const int, const int, const int, const int, const int, const int), const int innerRadius, const int outerRadius) {
@@ -81,7 +81,7 @@ cv::Mat GetSimmetricFilterImage(const int P, const int Q, long double (*Gaussian
             filter.at<cv::Vec2d>(u, v) = GaussianBandPassFilter(u, v, P, Q, innerRadius, outerRadius);
         }
     }
-    return { filter };
+    return { cv::Scalar::all(1) - filter };     //Полосовой фильтр получаем обратным преобразованием из режекторного фильтра
 }
 
 /// <summary>
@@ -114,6 +114,9 @@ double GaussianLowPassFilter(const int U, const int V, const int P, const int Q,
     return val;
 }
 
+/// <summary>
+/// Идеальный Режекторный фильтр
+/// </summary>
 double PerfectBandPassFilter(const int U, const int V, const int P, const int Q, int innerRadius, int outerRadius) {
     // Вычисляем D0 и W
     double D0 = (innerRadius + outerRadius) / 2.0;
@@ -125,6 +128,9 @@ double PerfectBandPassFilter(const int U, const int V, const int P, const int Q,
         return 0.0;
 }
 
+/// <summary>
+/// Режекторный фильтр Баттерворда
+/// </summary>
 double ButterworthBandPassFilter(const int U, const int V, const int P, const int Q, int innerRadius, int outerRadius, int order) {
     double dist = sqrt(pow(U - P/2, 2) + pow(V - Q/2, 2));
     double D0 = (innerRadius + outerRadius) / 2;
@@ -133,6 +139,9 @@ double ButterworthBandPassFilter(const int U, const int V, const int P, const in
 
 }
 
+/// <summary>
+/// Гауссов Режекторный фильтр
+/// </summary>
 long double GaussianBandPassFilter(const int U, const int V, const int P, const int Q, int innerRadius, int outerRadius) {
     auto gaussian = [&](double d, double radius, double width) {
         return exp(-pow(pow(d * d - radius * radius, 2) / (d * width), 2));
